@@ -19,6 +19,7 @@
   "homepage": "https://github.com/MohamedHelal0/ToDo-lest-backEnd#readme",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "path": "^0.12.7"
   }
 }
