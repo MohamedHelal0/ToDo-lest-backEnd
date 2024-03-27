@@ -1,6 +1,16 @@
-import {activeBtnElement, allBtnElement, clearCompletedElement,
-    completedBtnElement, getCheckboxIcons, getDeleteIcons, inputElement,
-    numberLeftTasks, themeButton, themeElement, todoListElement } from "./scripts/elements.js";
+import {
+  activeBtnElement,
+  allBtnElement,
+  clearCompletedElement,
+  completedBtnElement,
+  getCheckboxIcons,
+  getDeleteIcons,
+  inputElement,
+  numberLeftTasks,
+  themeButton,
+  themeElement,
+  todoListElement,
+} from "./scripts/elements.js";
 
 const toggleDarkMode = () => {
   themeElement.classList.toggle("dark-theme");
@@ -16,10 +26,12 @@ const fetchData = (key) => {
 
 const renderTaskList = (tasks) => {
   let taskItem = "";
-    tasks.forEach((task, index) => {
+  tasks.forEach((task, index) => {
     taskItem += `
       <li class="todo-item" id="${index}" draggable="true">
-        <div class="check-icon-box ${task.isCompleted ? " task-completed" : ""}">
+        <div class="check-icon-box ${
+          task.isCompleted ? " task-completed" : ""
+        }">
           <div class="check-icon-btn" tabindex="0" role="button">
             <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" width="11" height="9">
               <path class="check-icon-path" fill="none" stroke="#FFF" stroke-width="2" d="M1 4.304L3.696 7l6-6"/>
@@ -33,13 +45,12 @@ const renderTaskList = (tasks) => {
           alt="cross icon"
         />
       </li>
-    `
-    });
+    `;
+  });
 
-    todoListElement.innerHTML = taskItem;
-    inputElement.value = "";
-  };
-
+  todoListElement.innerHTML = taskItem;
+  inputElement.value = "";
+};
 
 const addTask = () => {
   const taskValue = inputElement.value;
@@ -49,7 +60,7 @@ const addTask = () => {
   const task = {
     value: taskValue,
     isCompleted: false,
-  }
+  };
 
   const tasks = fetchData("tasks") || [];
 
@@ -61,7 +72,7 @@ const addTask = () => {
 
 const deleteTask = (event, index) => {
   const answer = confirm("هل انت متأكد من حذف المهمة؟");
-  if(!answer) return;
+  if (!answer) return;
   const tasks = fetchData("tasks");
 
   tasks.splice(index, 1);
@@ -75,23 +86,20 @@ const initTaskListeners = () => {
   });
 
   getCheckboxIcons().forEach((box, index) => {
-    box.addEventListener("click", (event) => toggleTask(event, index))
-  })
+    box.addEventListener("click", (event) => toggleTask(event, index));
+  });
 };
 
-
 inputElement.addEventListener("keydown", (event) => {
-  if(event.key === "Enter") {
+  if (event.key === "Enter") {
     event.preventDefault();
     addTask();
   }
 });
 
-
 const saveToDB = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
 };
-
 
 const initDataStratup = () => {
   fetchData("darkModeFlag") && toggleDarkMode();
@@ -100,13 +108,13 @@ const initDataStratup = () => {
 
 const renderEmptyState = () => {
   todoListElement.innerHTML = `<li class='EmptyList'>
-   <p>The task list is empty</p>
+  <p>The task list is empty</p>
   </li>
-  `
+  `;
 };
 
 const initTaskList = (tasks) => {
-  if(tasks?.length){
+  if (tasks?.length) {
     renderTaskList(tasks);
     initTaskListeners();
     initDragAndDrop();
@@ -124,21 +132,18 @@ const toggleTask = (event, index) => {
   numberTasks();
 };
 
-
 const numberTasks = () => {
   const tasks = fetchData("tasks");
   const changeTasks = tasks.filter((task) => !task.isCompleted);
   numberLeftTasks.textContent = changeTasks.length;
 };
 
-
 const allTasks = () => {
   const tasks = fetchData("tasks");
   const changeTasks = tasks.filter((task) => task.value);
   initTaskList(changeTasks);
-}
+};
 allBtnElement.addEventListener("click", () => allTasks());
-
 
 const activeTasks = () => {
   const tasks = fetchData("tasks");
@@ -147,14 +152,12 @@ const activeTasks = () => {
 };
 activeBtnElement.addEventListener("click", () => activeTasks());
 
-
 const CompletedTasks = () => {
   const tasks = fetchData("tasks");
   const changeTasks = tasks.filter((task) => task.isCompleted);
   initTaskList(changeTasks);
-}
+};
 completedBtnElement.addEventListener("click", () => CompletedTasks());
-
 
 const clearCompletedTasks = () => {
   const tasks = fetchData("tasks");
@@ -163,7 +166,6 @@ const clearCompletedTasks = () => {
   initTaskList(changeTasks);
 };
 clearCompletedElement.addEventListener("click", () => clearCompletedTasks());
-
 
 const initDragAndDrop = () => {
   const listItems = document.querySelectorAll(".todo-item");
@@ -199,8 +201,4 @@ const initDragAndDrop = () => {
   });
 };
 
-
 initDataStratup();
-
-
-
