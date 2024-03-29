@@ -8,7 +8,7 @@ const {
 } = require("../models/user");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-
+// register
 const getRegisterPage = asyncHandler(async (req, res) => {
   res.status(200).render("register");
 });
@@ -40,7 +40,7 @@ const register = asyncHandler(async (req, res) => {
 
   res.status(201).json({ ...other, token });
 });
-
+// login
 const getLoginPage = asyncHandler(async (req, res) => {
   res.status(200).render("login");
 });
@@ -70,7 +70,7 @@ const login = asyncHandler(async (req, res) => {
 
   res.status(200).json({ ...other, token });
 });
-
+// ForgotPassword
 const getForgotPasswordPage = asyncHandler((req, res) => {
   res.render("forgot-password");
 });

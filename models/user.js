@@ -27,14 +27,21 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       minlength: 8,
     },
+    tasks: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );
 
 // Generate Token
-UserSchema.methods.generateToken = function() {
-  return jwt.sign({ id: this._id },process.env.JWT_SECRET_KEY);
-}
+UserSchema.methods.generateToken = function () {
+  return jwt.sign(
+    { id: this._id, email: this.email },
+    process.env.JWT_SECRET_KEY
+  );
+};
 
 // User Model
 const User = mongoose.model("User", UserSchema);
@@ -53,7 +60,7 @@ function validateRegisterUser(obj) {
 function validateLoginUser(obj) {
   const schema = Joi.object({
     email: Joi.string().trim().min(5).max(100).required().email(),
-    password: Joi.string().trim().min(6).required(),
+    password: passwordComplexity().required(),
   });
   return schema.validate(obj);
 }
@@ -61,15 +68,14 @@ function validateLoginUser(obj) {
 // Validate Change Password
 function validateChangePassword(obj) {
   const schema = Joi.object({
-    password: Joi.string().trim().min(6).required(),
+    password: passwordComplexity().required(),
   });
   return schema.validate(obj);
 }
-
 
 module.exports = {
   User,
   validateLoginUser,
   validateRegisterUser,
-  validateChangePassword
+  validateChangePassword,
 };

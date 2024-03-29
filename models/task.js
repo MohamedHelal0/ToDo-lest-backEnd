@@ -19,7 +19,7 @@ const TaskSchema = new mongoose.Schema(
 const validateCreateTask = (task) => {
   const schema = Joi.object({
     content: Joi.string().trim().min(1).required(),
-    active: Joi.boolean()
+    active: Joi.boolean(),
   });
   return schema.validate(task);
 };

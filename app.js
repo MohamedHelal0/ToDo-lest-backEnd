@@ -3,24 +3,30 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express"); 
 const connectDB = require("./db/connect"); 
+const {handleMissingRoute}=require('./middleware/redirect')
 const app = express();
+const helmet = require("helmet");
+const cors = require("cors");
 
+
+// middleware 
 app.use(express.json());
-
-// Custom middleware for logging requests
 const logger = require("./middleware/logger");
 app.use(logger.logger);
 
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(helmet());
+app.use(cors())
 
-app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'static')));
 app.set('view engine', 'ejs');
 
 app.use("/", require("./routes/tasks"))
 app.use("/auth", require("./routes/auth"))
 
 
-// Setting up the port to listen on
+app.use(handleMissingRoute);
+
+
 const port = process.env.PORT || 5500;
 
 // Function to start the server
