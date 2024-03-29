@@ -70,15 +70,32 @@ const addTask = () => {
   initTaskList(tasks);
 };
 
-const deleteTask = (event, index) => {
-  const answer = confirm("هل انت متأكد من حذف المهمة؟");
-  if (!answer) return;
+const deleteTask = async (event, index) => {
+  const confirmed = confirm("هل انت متأكد من حذف المهمة؟");
+  if (!confirmed) return;
+
   const tasks = fetchData("tasks");
 
-  tasks.splice(index, 1);
-  saveToDB("tasks", tasks);
-  initTaskList(tasks);
+  // Assuming you have a function to get task ID based on index
+  const taskId = getTaskIdAtIndex(index);
+
+  try {
+    const response = await fetch(`/tasks/${taskId}`, {
+      method: "DELETE"
+    });
+
+    if (response.ok) {
+      tasks.splice(index, 1);
+      saveToDB("tasks", tasks);
+      initTaskList(tasks);
+    } else {
+      console.error("Failed to delete task");
+    }
+  } catch (error) {
+    console.error("Error deleting task:", error);
+  }
 };
+
 
 const initTaskListeners = () => {
   getDeleteIcons().forEach((icon, index) => {
