@@ -71,6 +71,5 @@ module.exports = {
   User,
   validateLoginUser,
   validateRegisterUser,
-  validateUpdateUser,
   validateChangePassword
 };
