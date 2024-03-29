@@ -65,5 +65,11 @@ h2 {
   justify-content: center;
 }
 a {
-  color: #3401ff;
+  text-decoration: none;
+  margin-left: 5px;
+  font-size: 12px;
+}
+.Forgot_Password {
+  font-size: 13px;
+  margin-top: -20px;
 }
