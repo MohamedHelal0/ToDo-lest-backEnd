@@ -4,31 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>تسجيل الدخول</title>
-    <link rel="stylesheet" href="sineIn.css" />
+    <link rel="stylesheet" href="../login.css" />
   </head>
   <body>
     <div class="container">
       <div class="login-form">
         <h2>تسجيل الدخول</h2>
-        <form action="index.html" id="login">
+        <form action="" id="login">
           <input
             type="text"
             id="username"
+            name="email"
             placeholder="اسم المستخدم"
             required
           /><br />
           <input
             type="password"
             id="password"
+            name="password"
             placeholder="كلمة المرور"
             required
           /><br />
+          <a href="">Forget Password</a>
+          <p id="message"></p>
           <input type="submit" value="تسجيل الدخول" />
-          <h3 class="sineIn">انشاء حساب <a href="sineUp.html">Sine Up</a></h3>
+          <h3 class="sineIn">انشاء حساب <a href="/auth/register">Sine Up</a></h3>
+          <h3 id="invalid"></h3>
         </form>
       </div>
     </div>
 
-    <script src="scripts/sineIn.js"></script>
+    <script src="../scripts/login.js"></script>
   </body>
 </html>

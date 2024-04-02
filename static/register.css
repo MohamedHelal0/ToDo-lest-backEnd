@@ -16,7 +16,7 @@ body {
   background: gradient(#ff6b6b, #0e2946);
 }
 
-.signup-form {
+.register-form {
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
@@ -57,7 +57,7 @@ h2 {
   display: flex;
   justify-content: center;
 }
-#signup {
+#register {
   margin-left: -20px;
   margin: 0 30px 0 10px;
 }

@@ -4,28 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>إنشاء حساب</title>
-    <link rel="stylesheet" href="sineUp.css" />
+    <link rel="stylesheet" href="../register.css" />
   </head>
   <body>
     <div class="container">
-      <div class="signup-form">
+      <div class="register-form">
         <h2>إنشاء حساب</h2>
-        <form action="sineIn.html" id="signup">
+        <form id="register">
           <input
             type="text"
             id="username"
+            name="username"
             placeholder="اسم المستخدم"
             required
           /><br />
           <input
             type="email"
             id="email"
+            name="email"
             placeholder="البريد الإلكتروني"
             required
           /><br />
           <input
             type="password"
             id="password"
+            name="password"
             placeholder="كلمة المرور"
             required
           /><br />
@@ -33,7 +36,6 @@
         </form>
       </div>
     </div>
-
-    <script src="sineUp.js"></script>
+    <script src="../scripts/register.js"></script>
   </body>
 </html>

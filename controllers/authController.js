@@ -14,32 +14,50 @@ const getRegisterPage = asyncHandler(async (req, res) => {
 });
 
 const register = asyncHandler(async (req, res) => {
+  const { username, email, password } = req.body;
+  // Validate request body
   const { error } = validateRegisterUser(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  let user = await User.findOne({ email: req.body.email });
-  if (user) {
-    return res.status(400).json({ message: "this user already registered" });
+  try {
+    // Check if the user already exists
+    let user = await User.findOne({ email: req.body.email });
+    if (user) {
+      return res
+        .status(400)
+        .json({ message: "This user is already registered." });
+    }
+
+    // Generate salt and hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    // Create a new user instance
+    user = new User({
+      email: req.body.email,
+      username: req.body.username,
+      password: hashedPassword,
+    });
+
+    // Save the user to the database
+    const result = await user.save();
+    const token = user.generateToken();
+
+    // Omit password from the response
+    const { password, ...other } = result._doc;
+
+    // Return user data and token
+    res
+      .status(201).json({ ...other, token })
+  } catch (error) {
+    // Log and handle errors
+    console.error("Error during registration:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  const salt = await bcrypt.genSalt(10);
-  req.body.password = await bcrypt.hash(req.body.password, salt);
-
-  user = new User({
-    email: req.body.email,
-    username: req.body.username,
-    password: req.body.password,
-  });
-
-  const result = await user.save();
-  const token = user.generateToken();
-
-  const { password, ...other } = result._doc;
-
-  res.status(201).json({ ...other, token });
 });
+
 // login
 const getLoginPage = asyncHandler(async (req, res) => {
   res.status(200).render("login");
