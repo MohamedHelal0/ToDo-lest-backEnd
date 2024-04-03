@@ -1,22 +1,35 @@
-document.getElementById("forgotPasswordForm").addEventListener("submit", function(event) {
-  event.preventDefault();
-  var email = document.getElementById("email").value;
-  var messageElement = document.getElementById("message");
-  
-  // Clear any previous messages
-  messageElement.innerHTML = "";
-
-  // Here you can add your own logic to handle the forgot password functionality,
-  // such as sending a reset password email or displaying a message.
-  // For demonstration, let's just display a message.
-  messageElement.textContent = "Sending reset password link to " + email + "...";
-
-  // Simulate sending reset password link (you should replace this with actual logic)
-  setTimeout(function() {
-    // Display success message
-    messageElement.textContent = "Reset password link has been sent to " + email;
-    messageElement.style.color = "green";
-    // Clear the email input field
-    document.getElementById("email").value = "";
-  }, 2000); // Simulate a delay of 2 seconds, replace with actual logic
-});
+document
+  .getElementById("forgotPasswordForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    const email = document.getElementById("email").value;
+    var messageElement = document.getElementById("message")
+    const data = { email };
+    fetch(window.location.href, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        if (response.ok) {
+          console.log(response);
+          messageElement.textContent =
+            "Reset password link has been sent to " + email;
+          messageElement.style.color = "green";
+        }
+        console.log(response);
+        return response.text(); // or response.json() if expecting JSON data
+      })
+      .then((data) => {
+        console.log("Email sent successfully:", data);
+        // Optionally, display a success message or redirect the user
+      })
+      .catch((error) => {
+        console.error("There was a problem sending the email:", error);
+      });
+  });

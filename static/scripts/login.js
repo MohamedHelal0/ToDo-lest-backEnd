@@ -50,6 +50,5 @@ function submitForm() {
       console.error("Error:", error.message);
     });
 }
-const invalid = document.getElementById("invalid");
 const form = document.getElementById("login");
 form.addEventListener("submit", validateEmail);

@@ -23,8 +23,8 @@ const register = asyncHandler(async (req, res) => {
 
   try {
     // Check if the user already exists
-    let user = await User.findOne({ email: req.body.email });
-    if (user) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res
         .status(400)
         .json({ message: "This user is already registered." });
@@ -32,28 +32,31 @@ const register = asyncHandler(async (req, res) => {
 
     // Generate salt and hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create a new user instance
-    user = new User({
-      email: req.body.email,
-      username: req.body.username,
+    const newUser = new User({
+      email,
+      username,
       password: hashedPassword,
     });
 
     // Save the user to the database
-    const result = await user.save();
-    const token = user.generateToken();
+    const savedUser = await newUser.save();
+    const token = savedUser.generateToken();
 
-    // Omit password from the response
-    const { password, ...other } = result._doc;
+    // Omit sensitive information from the response
+    const { password: savedPassword, ...userWithoutPassword } =
+      savedUser.toObject();
 
     // Return user data and token
-    res
-      .status(201).json({ ...other, token })
+    res.status(201).json({ user: userWithoutPassword, token });
   } catch (error) {
     // Log and handle errors
     console.error("Error during registration:", error);
+    if (error.name === "MongoError" && error.code === 11000) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -89,22 +92,24 @@ const login = asyncHandler(async (req, res) => {
   res.status(200).json({ ...other, token });
 });
 // ForgotPassword
+
 const getForgotPasswordPage = asyncHandler((req, res) => {
   res.render("forgot-password");
 });
 
 const sendForgotPasswordLink = asyncHandler(async (req, res) => {
+  console.log(req.body);
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return res.status(404).json({ message: "user not found" });
   }
 
   const secret = process.env.JWT_SECRET_KEY + user.password;
-  const token = jwt.sign({ email: user.email, id: user.id }, secret, {
-    expiresIn: "10m",
-  });
+  const token = jwt.sign({ email: user.email, id: user.id }, secret);
 
-  const link = `http://localhost:8000/password/reset-password/${user._id}/${token}`;
+  const link = `http://localhost:${
+    process.env.PORT || 5500
+  }/auth/reset-password/${user._id}/${token}`;
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -129,8 +134,8 @@ const sendForgotPasswordLink = asyncHandler(async (req, res) => {
       console.log(error);
       res.status(500).json({ message: "something went wrong" });
     } else {
-      console.log("Email sent: " + success.response);
-      res.render("link-send");
+      console.log("Email sent: " + success.message);
+      res.status(200);
     }
   });
 });
@@ -138,18 +143,24 @@ const sendForgotPasswordLink = asyncHandler(async (req, res) => {
 const getResetPasswordPage = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.userId);
   if (!user) {
-    return res.status(404).json({ message: "user not found" });
+    return res.status(404).json({ message: "User not found" });
+  }
+  const secret = process.env.JWT_SECRET_KEY + user.password;
+  const token = req.params.token;
+  if (!token) {
+    return res.status(400).json({ message: "Token not provided" });
   }
 
-  const secret = process.env.JWT_SECRET_KEY + user.password;
   try {
-    jwt.verify(req.params.token, secret);
-    res.render("reset-password", { email: user.email });
+    const decoded = jwt.verify(token, secret);
+    res.render("reset-password");
   } catch (error) {
-    console.log(error);
-    res.json({ message: "Error" });
+    console.log("JWT Verification Error:", error);
+    return res.status(400).json({ message: "Invalid or expired token" });
   }
 });
+
+
 
 const resetThePassword = asyncHandler(async (req, res) => {
   const { error } = validateChangePassword(req.body);
@@ -171,7 +182,7 @@ const resetThePassword = asyncHandler(async (req, res) => {
     user.password = req.body.password;
 
     await user.save();
-    res.render("success-reset-password");
+    res.status(200);
   } catch (error) {
     console.log(error);
     res.json({ message: "Error" });

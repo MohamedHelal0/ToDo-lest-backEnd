@@ -22,6 +22,8 @@ router
   .get(getForgotPasswordPage)
   .post(sendForgotPasswordLink);
 
+router.route("/reset-password")
+
 router
   .route("/reset-password/:userId/:token")
   .get(getResetPasswordPage)
